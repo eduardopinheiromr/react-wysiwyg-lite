@@ -8,6 +8,12 @@
   <script>
     const DEMO_USE_NPM_LATEST =
       window.location.hostname === 'react-wysiwyg-lite.netlify.app';
+    const DEMO_REACT_URL = DEMO_USE_NPM_LATEST
+      ? 'https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js'
+      : './demo-vendor/react.production.min.js';
+    const DEMO_REACT_DOM_URL = DEMO_USE_NPM_LATEST
+      ? 'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js'
+      : './demo-vendor/react-dom.production.min.js';
     const DEMO_LIBRARY_BASE = DEMO_USE_NPM_LATEST
       ? 'https://cdn.jsdelivr.net/npm/react-wysiwyg-lite@latest/dist'
       : './dist';
@@ -19,6 +25,8 @@
 
     window.__RWL_DEMO_CONFIG = {
       useNpmLatest: DEMO_USE_NPM_LATEST,
+      reactUrl: DEMO_REACT_URL,
+      reactDomUrl: DEMO_REACT_DOM_URL,
       libraryBase: DEMO_LIBRARY_BASE,
     };
   </script>
@@ -354,37 +362,7 @@
     <div id="root">Loading demo...</div>
   </div>
 
-  <!-- Static vendor dependencies for local use and Netlify deploys -->
-  <script src="./demo-vendor/react.production.min.js"></script>
-  <script src="./demo-vendor/react-dom.production.min.js"></script>
-
   <script>
-    globalThis.process ??= { env: { NODE_ENV: 'production' } };
-    globalThis.process.env ??= { NODE_ENV: 'production' };
-    globalThis.process.env.NODE_ENV ??= 'production';
-
-    function createRuntimeElement(type, props, key) {
-      const safeProps = props ?? {};
-      const { children, ...rest } = safeProps;
-      const nextProps = key === undefined ? rest : { ...rest, key };
-
-      if (children === undefined) {
-        return React.createElement(type, nextProps);
-      }
-
-      if (Array.isArray(children)) {
-        return React.createElement(type, nextProps, ...children);
-      }
-
-      return React.createElement(type, nextProps, children);
-    }
-
-    globalThis.jsxRuntime = {
-      Fragment: React.Fragment,
-      jsx: createRuntimeElement,
-      jsxs: createRuntimeElement,
-    };
-
     function loadScript(src) {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -395,9 +373,55 @@
       });
     }
 
-    window.__RWL_DEMO_READY = loadScript(
-      `${window.__RWL_DEMO_CONFIG.libraryBase}/index.umd.js`,
-    );
+    function ensureScript(src, globalName) {
+      if (globalName && globalThis[globalName]) {
+        return Promise.resolve();
+      }
+
+      return loadScript(src);
+    }
+
+    function setupRuntime() {
+      globalThis.process ??= { env: { NODE_ENV: 'production' } };
+      globalThis.process.env ??= { NODE_ENV: 'production' };
+      globalThis.process.env.NODE_ENV ??= 'production';
+
+      function createRuntimeElement(type, props, key) {
+        const safeProps = props ?? {};
+        const { children, ...rest } = safeProps;
+        const nextProps = key === undefined ? rest : { ...rest, key };
+
+        if (children === undefined) {
+          return React.createElement(type, nextProps);
+        }
+
+        if (Array.isArray(children)) {
+          return React.createElement(type, nextProps, ...children);
+        }
+
+        return React.createElement(type, nextProps, children);
+      }
+
+      globalThis.jsxRuntime = {
+        Fragment: React.Fragment,
+        jsx: createRuntimeElement,
+        jsxs: createRuntimeElement,
+      };
+    }
+
+    window.__RWL_DEMO_READY = ensureScript(
+      window.__RWL_DEMO_CONFIG.reactUrl,
+      'React',
+    )
+      .then(() => ensureScript(window.__RWL_DEMO_CONFIG.reactDomUrl, 'ReactDOM'))
+      .then(() => {
+        setupRuntime();
+
+        return ensureScript(
+          `${window.__RWL_DEMO_CONFIG.libraryBase}/index.umd.js`,
+          'ReactWysiwygLite',
+        );
+      });
   </script>
 
   <script>
