@@ -4,6 +4,20 @@ import dts from "vite-plugin-dts";
 /// <reference types="vitest" />
 import { defineConfig } from "vitest/config";
 
+const reactRuntimePattern =
+	/(?:^|[/\\])react[/\\]cjs[/\\]react-jsx(?:-dev)?-runtime(?:\.(?:production\.min|development))?\.js$/;
+
+const reactRuntimeEntryPattern =
+	/(?:^|[/\\])react[/\\]jsx(?:-dev)?-runtime(?:\.js)?$/;
+
+const isExternalDependency = (id: string) =>
+	id === "react" ||
+	id === "react-dom" ||
+	id === "react/jsx-runtime" ||
+	id === "react/jsx-dev-runtime" ||
+	reactRuntimeEntryPattern.test(id) ||
+	reactRuntimePattern.test(id);
+
 export default defineConfig({
 	plugins: [
 		react(),
@@ -25,11 +39,13 @@ export default defineConfig({
 			},
 		},
 		rollupOptions: {
-			external: ["react", "react-dom"],
+			external: isExternalDependency,
 			output: {
 				globals: {
 					react: "React",
 					"react-dom": "ReactDOM",
+					"react/jsx-runtime": "jsxRuntime",
+					"react/jsx-dev-runtime": "jsxRuntimeDev",
 				},
 				assetFileNames: (info) =>
 					info.name === "style.css" ? "styles.css" : (info.name ?? ""),

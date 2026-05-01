@@ -1,6 +1,6 @@
 {
 	"name": "react-wysiwyg-lite",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Lightweight, extensible WYSIWYG editor for React. useState-first API, zero dependencies.",
 	"type": "module",
 	"main": "./dist/index.cjs",

@@ -5,7 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>react-wysiwyg-lite — Demo</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="./dist/styles.css" />
+  <script>
+    const DEMO_USE_NPM_LATEST =
+      window.location.hostname === 'react-wysiwyg-lite.netlify.app';
+    const DEMO_LIBRARY_BASE = DEMO_USE_NPM_LATEST
+      ? 'https://cdn.jsdelivr.net/npm/react-wysiwyg-lite@latest/dist'
+      : './dist';
+
+    const demoStylesheet = document.createElement('link');
+    demoStylesheet.rel = 'stylesheet';
+    demoStylesheet.href = `${DEMO_LIBRARY_BASE}/styles.css`;
+    document.head.appendChild(demoStylesheet);
+
+    window.__RWL_DEMO_CONFIG = {
+      useNpmLatest: DEMO_USE_NPM_LATEST,
+      libraryBase: DEMO_LIBRARY_BASE,
+    };
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
@@ -22,6 +38,25 @@
       margin: 0 auto;
     }
 
+    .header { 
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .column {
+    flex-direction: column;
+  }
+
+  .w-full {
+    width: 100%;
+  }
+
     h1 {
       font-size: 1.6rem;
       font-weight: 700;
@@ -32,6 +67,106 @@
       color: #64748b;
       font-size: 0.9rem;
       margin: 0 0 32px;
+    }
+
+    .meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 14px;
+      margin: 0 0 30px;
+    }
+
+    .meta-links {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .meta-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid #dbe4f0;
+      background: rgba(255, 255, 255, 0.9);
+      color: #0f172a;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .meta-link svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .meta-link:hover {
+      transform: translateY(-1px);
+      border-color: #cbd5e1;
+      background: #ffffff;
+    }
+
+    .meta-link[data-kind="npm"] {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #9a3412;
+    }
+
+    .meta-link[data-kind="github"] {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .demo-mode {
+      font-size: 0.76rem;
+      line-height: 1.45;
+      color: #64748b;
+      max-width: 240px;
+    }
+
+    .size-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      gap: 12px;
+      flex: 1 1 360px;
+    }
+
+    .size-card {
+      border: 1px solid #dbe4f0;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(248,250,252,0.96));
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+      padding: 14px 15px;
+      min-height: 98px;
+    }
+
+    .size-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+
+    .size-value {
+      font-size: 1.28rem;
+      line-height: 1.1;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .size-detail {
+      font-size: 0.76rem;
+      line-height: 1.45;
+      color: #475569;
     }
 
     .section-label {
@@ -128,83 +263,198 @@
       margin-left: 8px;
       vertical-align: middle;
     }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 28px 14px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0px;
+        margin-bottom: 16px;
+      }
+
+      .subtitle {
+        margin: 8px 0 16px;
+      }
+
+      .size-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .meta-link {
+        width: 48px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="page">
-    <h1>react-wysiwyg-lite <span class="badge">Demo</span></h1>
-    <p class="subtitle">
-      Lightweight, composable WYSIWYG editor for React — zero runtime dependencies.
-    </p>
-    <div id="root"></div>
+    <div class="header">
+
+      <div class="w-full flex column">
+
+        
+        <h1>react-wysiwyg-lite <span class="badge">Demo</span></h1>
+        <p class="subtitle">
+          Lightweight, composable WYSIWYG editor for React — zero runtime dependencies.
+        </p>
+      </div>
+
+       <div class="meta-links">
+        <a
+          class="meta-link"
+          data-kind="npm"
+          href="https://www.npmjs.com/package/react-wysiwyg-lite"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="npm package"
+        >
+         <svg viewBox="0 0 780 250" aria-hidden="true"><path fill="rgb(203, 56, 55)" d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M480,0v200h100V50h50v150h50V50h50v150h50V0H480z M0,200h100V50h50v150h50V0H0V200z" stroke-width="5" stroke="#f7f7f7"></path></svg>
+        </a>
+        <a
+          class="meta-link"
+          data-kind="github"
+          href="https://github.com/eduardopinheiromr/react-wysiwyg-lite"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub repository"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.7.5 12.12c0 5.14 3.3 9.49 7.87 11.03.58.11.79-.25.79-.56 0-.28-.01-1.2-.02-2.18-3.2.7-3.88-1.38-3.88-1.38-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.78 2.71 1.27 3.37.97.1-.76.4-1.27.73-1.56-2.56-.29-5.25-1.3-5.25-5.76 0-1.27.45-2.31 1.18-3.12-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.19a10.9 10.9 0 0 1 5.8 0c2.21-1.5 3.18-1.19 3.18-1.19.62 1.59.23 2.77.11 3.06.74.81 1.18 1.85 1.18 3.12 0 4.47-2.69 5.46-5.26 5.75.41.36.78 1.08.78 2.18 0 1.57-.01 2.84-.01 3.22 0 .31.21.68.8.56a11.64 11.64 0 0 0 7.86-11.03C23.5 5.7 18.35.5 12 .5Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="meta-bar">
+     
+
+      <div class="size-strip" aria-label="Bundle size overview">
+        <div class="size-card">
+          <div class="size-label">Editor Payload</div>
+          <div class="size-value">65.64 kB</div>
+          <div class="size-detail">Unpacked total of JS + CSS.</div>
+        </div>
+        <div class="size-card">
+          <div class="size-label">Gzip</div>
+          <div class="size-value">15.70 kB</div>
+          <div class="size-detail">Combined gzip size for the editor payload.</div>
+        </div>
+        <div class="size-card">
+          <div class="size-label">Breakdown</div>
+          <div class="size-detail">
+            JS: 57.53 kB unpacked / 13.79 kB gzip<br />
+            CSS: 8.11 kB unpacked / 2.04 kB gzip
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="root">Loading demo...</div>
   </div>
 
-  <!-- Dependencies from CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Static vendor dependencies for local use and Netlify deploys -->
+  <script src="./demo-vendor/react.production.min.js"></script>
+  <script src="./demo-vendor/react-dom.production.min.js"></script>
 
   <script>
     globalThis.process ??= { env: { NODE_ENV: 'production' } };
     globalThis.process.env ??= { NODE_ENV: 'production' };
     globalThis.process.env.NODE_ENV ??= 'production';
+
+    function createRuntimeElement(type, props, key) {
+      const safeProps = props ?? {};
+      const { children, ...rest } = safeProps;
+      const nextProps = key === undefined ? rest : { ...rest, key };
+
+      if (children === undefined) {
+        return React.createElement(type, nextProps);
+      }
+
+      if (Array.isArray(children)) {
+        return React.createElement(type, nextProps, ...children);
+      }
+
+      return React.createElement(type, nextProps, children);
+    }
+
+    globalThis.jsxRuntime = {
+      Fragment: React.Fragment,
+      jsx: createRuntimeElement,
+      jsxs: createRuntimeElement,
+    };
+
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.body.appendChild(script);
+      });
+    }
+
+    window.__RWL_DEMO_READY = loadScript(
+      `${window.__RWL_DEMO_CONFIG.libraryBase}/index.umd.js`,
+    );
   </script>
 
-  <!-- Built library (run `npm run build` first) -->
-  <script src="./dist/index.umd.js"></script>
+  <script>
+    window.__RWL_DEMO_READY
+      .then(() => {
+        const {
+          Editor, Toolbar, Separator,
+          ptBR,
+          BtnH1, BtnH2, BtnH3, BtnH4, BtnH5,
+          BtnBold, BtnItalic, BtnUnderline, BtnStrikeThrough,
+          BtnBulletList, BtnOrderedList, BtnIndent, BtnOutdent,
+          BtnLink, BtnImage, BtnTable, BtnTwoColumns, BtnMediaLeft, BtnMediaRight, BtnHeroMedia,
+          BtnAlignLeft, BtnAlignCenter, BtnAlignRight,
+          BtnUndo, BtnRedo, BtnClearFormatting,
+        } = ReactWysiwygLite;
+        const h = React.createElement;
 
-  <script type="text/babel">
-    const {
-      Editor, Toolbar, Separator,
-      ptBR,
-      BtnH1, BtnH2, BtnH3, BtnH4, BtnH5,
-      BtnBold, BtnItalic, BtnUnderline, BtnStrikeThrough,
-      BtnBulletList, BtnOrderedList, BtnIndent, BtnOutdent,
-      BtnLink, BtnImage, BtnTable, BtnTwoColumns, BtnMediaLeft, BtnMediaRight, BtnHeroMedia,
-      BtnAlignLeft, BtnAlignCenter, BtnAlignRight,
-      BtnUndo, BtnRedo, BtnClearFormatting,
-    } = ReactWysiwygLite;
+        const DEMO_DICTIONARY = {
+          ...ptBR,
+          toolbar: {
+            ...ptBR.toolbar,
+            heroMedia: 'Hero + mídia',
+          },
+          tableToolbar: {
+            ...ptBR.tableToolbar,
+            toggleHeaderRow: 'Linha header',
+          },
+        };
 
-    const DEMO_DICTIONARY = {
-      ...ptBR,
-      toolbar: {
-        ...ptBR.toolbar,
-        heroMedia: 'Hero + mídia',
-      },
-      tableToolbar: {
-        ...ptBR.tableToolbar,
-        toggleHeaderRow: 'Linha header',
-      },
-    };
+        const DEMO_THEME = {
+          colors: {
+            editorBackground: '#fffdf7',
+            editorBorder: '#d8c8b8',
+            toolbarBackground: '#f8f1e8',
+            buttonText: '#5b3b21',
+            buttonHoverBackground: '#efe2d4',
+            buttonActiveBackground: '#dbeafe',
+            buttonActiveText: '#1d4ed8',
+            linkApplyBackground: '#0f766e',
+            linkApplyText: '#f8fafc',
+            linkApplyHoverBackground: '#115e59',
+            selectionBackground: '#fde68a',
+            selectionText: '#1f2937',
+          },
+        };
 
-    const DEMO_THEME = {
-      colors: {
-        editorBackground: '#fffdf7',
-        editorBorder: '#d8c8b8',
-        toolbarBackground: '#f8f1e8',
-        buttonText: '#5b3b21',
-        buttonHoverBackground: '#efe2d4',
-        buttonActiveBackground: '#dbeafe',
-        buttonActiveText: '#1d4ed8',
-        linkApplyBackground: '#0f766e',
-        linkApplyText: '#f8fafc',
-        linkApplyHoverBackground: '#115e59',
-        selectionBackground: '#fde68a',
-        selectionText: '#1f2937',
-      },
-    };
+        const INITIAL_HTML = [
+          '<p class="rsw-layout-eyebrow">Demo configurável</p>',
+          '<h2>Preset hero/media, headings e tema por props</h2>',
+          '<p>Selecione um trecho para ver a bubble toolbar com headings, listas e link. Abra o link para ver o botão <strong>Aplicar</strong> com tema customizado.</p>',
+          '<ul><li>Headings H1-H5</li>',
+          '<li>Presets: duas colunas, mídia lateral e hero + mídia</li>',
+          '<li>Dicionário em pt-BR com override parcial</li></ul>',
+          '<table class="rsw-table"><tbody><tr><th><p>Recurso</p></th><th><p>Status</p></th></tr><tr><td><p>Tabela mínima</p></td><td><p>Clique na célula para abrir os controles</p></td></tr><tr><td><p>Header row</p></td><td><p>Use o botão Hdr para alternar a linha atual</p></td></tr></tbody></table>',
+        ].join('');
 
-    const INITIAL_HTML = [
-      '<p class="rsw-layout-eyebrow">Demo configurável</p>',
-      '<h2>Preset hero/media, headings e tema por props</h2>',
-      '<p>Selecione um trecho para ver a bubble toolbar com headings, listas e link. Abra o link para ver o botão <strong>Aplicar</strong> com tema customizado.</p>',
-      '<ul><li>Headings H1-H5</li>',
-      '<li>Presets: duas colunas, mídia lateral e hero + mídia</li>',
-      '<li>Dicionário em pt-BR com override parcial</li></ul>',
-      '<table class="rsw-table"><tbody><tr><th><p>Recurso</p></th><th><p>Status</p></th></tr><tr><td><p>Tabela mínima</p></td><td><p>Clique na célula para abrir os controles</p></td></tr><tr><td><p>Header row</p></td><td><p>Use o botão Hdr para alternar a linha atual</p></td></tr></tbody></table>',
-    ].join('');
-
-    const DEMO_SNIPPET = String.raw`import {
+        const DEMO_SNIPPET = String.raw`import {
   Editor,
   Toolbar,
   Separator,
@@ -275,7 +525,6 @@ async function handleImportImage(file) {
   });
 }
 
-function DemoEditor({ html, setHtml }) {
   return (
     <Editor
       value={html}
@@ -306,81 +555,145 @@ function DemoEditor({ html, setHtml }) {
   );
 }`;
 
-    // onImportImage callback: in a real app this would upload to a server.
-    // Here we just convert to a base64 data URL as a demo.
-    async function handleImportImage(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+        // onImportImage callback: in a real app this would upload to a server.
+        // Here we just convert to a base64 data URL as a demo.
+        async function handleImportImage(file) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }
+
+        function createToolbarChildren() {
+          return [
+            h(BtnH1, { key: 'h1' }),
+            h(BtnH2, { key: 'h2' }),
+            h(BtnH3, { key: 'h3' }),
+            h(BtnH4, { key: 'h4' }),
+            h(BtnH5, { key: 'h5' }),
+            h(Separator, { key: 'sep-headings' }),
+            h(BtnBold, { key: 'bold' }),
+            h(BtnItalic, { key: 'italic' }),
+            h(BtnUnderline, { key: 'underline' }),
+            h(BtnStrikeThrough, { key: 'strike' }),
+            h(Separator, { key: 'sep-inline' }),
+            h(BtnBulletList, { key: 'bullet-list' }),
+            h(BtnOrderedList, { key: 'ordered-list' }),
+            h(BtnIndent, { key: 'indent' }),
+            h(BtnOutdent, { key: 'outdent' }),
+            h(Separator, { key: 'sep-lists' }),
+            h(BtnLink, { key: 'link' }),
+            h(BtnImage, { key: 'image' }),
+            h(BtnTable, { key: 'table' }),
+            h(Separator, { key: 'sep-media' }),
+            h(BtnTwoColumns, { key: 'two-columns' }),
+            h(BtnMediaLeft, { key: 'media-left' }),
+            h(BtnMediaRight, { key: 'media-right' }),
+            h(BtnHeroMedia, { key: 'hero-media' }),
+            h(Separator, { key: 'sep-alignment' }),
+            h(BtnAlignLeft, { key: 'align-left' }),
+            h(BtnAlignCenter, { key: 'align-center' }),
+            h(BtnAlignRight, { key: 'align-right' }),
+            h(Separator, { key: 'sep-history' }),
+            h(BtnUndo, { key: 'undo' }),
+            h(BtnRedo, { key: 'redo' }),
+            h(Separator, { key: 'sep-clear' }),
+            h(BtnClearFormatting, { key: 'clear-formatting' }),
+          ];
+        }
+
+        function App() {
+          const [html, setHtml] = React.useState(INITIAL_HTML);
+          const [copyLabel, setCopyLabel] = React.useState('Copiar snippet');
+
+          async function copySnippet() {
+            try {
+              if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(DEMO_SNIPPET);
+              } else {
+                const input = document.createElement('textarea');
+                input.value = DEMO_SNIPPET;
+                input.setAttribute('readonly', 'true');
+                input.style.position = 'fixed';
+                input.style.opacity = '0';
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+              }
+
+              setCopyLabel('Snippet copiado');
+            } catch {
+              setCopyLabel('Falha ao copiar');
+            }
+
+            window.setTimeout(() => setCopyLabel('Copiar snippet'), 1600);
+          }
+
+          return h(
+            'div',
+            null,
+            h(
+              'div',
+              { className: 'editor-section' },
+              h('div', { className: 'section-label' }, 'Editor'),
+              h(
+                Editor,
+                {
+                  dictionary: DEMO_DICTIONARY,
+                  theme: DEMO_THEME,
+                  value: html,
+                  onChange: (event) => setHtml(event.target.value),
+                  onImportImage: handleImportImage,
+                  placeholder: 'Comece a digitar aqui...',
+                },
+                h(Toolbar, null, createToolbarChildren()),
+              ),
+              h(
+                'p',
+                { className: 'hint' },
+                'Experimente selecionar texto para abrir a bubble toolbar com headings e listas, abrir o popover de link para ver o botão “Aplicar” tematizado e clicar em uma célula da tabela para mexer em header, alinhamento, linhas e colunas.',
+              ),
+            ),
+            h(
+              'div',
+              null,
+              h('div', { className: 'section-label' }, 'HTML Output'),
+              h('div', { className: 'html-output' }, html || '(empty)'),
+              h(
+                'div',
+                { className: 'code-card' },
+                h(
+                  'div',
+                  { className: 'code-card-header' },
+                  h('div', { className: 'code-card-title' }, 'Snippet de uso do editor'),
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'code-copy',
+                      onClick: copySnippet,
+                    },
+                    copyLabel,
+                  ),
+                ),
+                h('pre', { className: 'code-sample' }, DEMO_SNIPPET),
+              ),
+            ),
+          );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+      })
+      .catch((error) => {
+        console.error(error);
+        const root = document.getElementById('root');
+        if (root) {
+          root.textContent = `Failed to load demo assets: ${error.message}`;
+        }
       });
-    }
-
-    function App() {
-      const [html, setHtml] = React.useState(INITIAL_HTML);
-      const [copyLabel, setCopyLabel] = React.useState('Copiar snippet');
-
-      async function copySnippet() {
-        await navigator.clipboard.writeText(DEMO_SNIPPET);
-        setCopyLabel('Snippet copiado');
-        window.setTimeout(() => setCopyLabel('Copiar snippet'), 1600);
-      }
-
-      return (
-        <div>
-          <div className="editor-section">
-            <div className="section-label">Editor</div>
-            <Editor
-              dictionary={DEMO_DICTIONARY}
-              theme={DEMO_THEME}
-              value={html}
-              onChange={(e) => setHtml(e.target.value)}
-              onImportImage={handleImportImage}
-              placeholder="Comece a digitar aqui..."
-            >
-              <Toolbar>
-                <BtnH1 /><BtnH2 /><BtnH3 /><BtnH4 /><BtnH5 />
-                <Separator />
-                <BtnBold /><BtnItalic /><BtnUnderline /><BtnStrikeThrough />
-                <Separator />
-                <BtnBulletList /><BtnOrderedList /><BtnIndent /><BtnOutdent />
-                <Separator />
-                <BtnLink /><BtnImage /><BtnTable />
-                <Separator />
-                <BtnTwoColumns /><BtnMediaLeft /><BtnMediaRight /><BtnHeroMedia />
-                <Separator />
-                <BtnAlignLeft /><BtnAlignCenter /><BtnAlignRight />
-                <Separator />
-                <BtnUndo /><BtnRedo />
-                <Separator />
-                <BtnClearFormatting />
-              </Toolbar>
-            </Editor>
-            <p className="hint">
-              Experimente selecionar texto para abrir a bubble toolbar com headings e listas, abrir o popover de link para ver o botão “Aplicar” tematizado e clicar em uma célula da tabela para mexer em header, alinhamento, linhas e colunas.
-            </p>
-          </div>
-
-          <div>
-            <div className="section-label">HTML Output</div>
-            <div className="html-output">{html || '(empty)'}</div>
-
-            <div className="code-card">
-              <div className="code-card-header">
-                <div className="code-card-title">Snippet idêntico ao setup da demo</div>
-                <button type="button" className="code-copy" onClick={copySnippet}>
-                  {copyLabel}
-                </button>
-              </div>
-              <pre className="code-sample">{DEMO_SNIPPET}</pre>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>

@@ -2,6 +2,24 @@
 
 Lightweight, extensible WYSIWYG editor for React with zero runtime dependencies, full TypeScript types, tree-shakeable exports, localized labels, floating contextual toolbars, and built-in HTML hardening.
 
+## Links
+
+| Resource | URL |
+| --- | --- |
+| npm | [react-wysiwyg-lite](https://www.npmjs.com/package/react-wysiwyg-lite) |
+| GitHub | [eduardopinheiromr/react-wysiwyg-lite](https://github.com/eduardopinheiromr/react-wysiwyg-lite) |
+| Live Demo | [react-wysiwyg-lite.netlify.app](https://react-wysiwyg-lite.netlify.app/) |
+
+## Bundle Size
+
+Measured from the current distributable assets: `dist/index.js` + `dist/styles.css`.
+
+| Asset | Unpacked | Gzip |
+| --- | ---: | ---: |
+| Editor total (JS + CSS) | 65.64 kB | 15.70 kB |
+| JS (`dist/index.js`) | 57.53 kB | 13.79 kB |
+| CSS (`dist/styles.css`) | 8.11 kB | 2.04 kB |
+
 ## Highlights
 
 - Zero runtime dependencies.
