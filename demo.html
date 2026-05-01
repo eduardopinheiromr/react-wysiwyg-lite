@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>react-wysiwyg-lite — Demo</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./dist/styles.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin: 0 0 32px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .editor-section { margin-bottom: 28px; }
+
+    .html-output {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 16px 18px;
+      border-radius: 8px;
+      font-family: ui-monospace, 'Cascadia Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #e0e7ff;
+      color: #4338ca;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>react-wysiwyg-lite <span class="badge">Demo</span></h1>
+    <p class="subtitle">
+      Lightweight, composable WYSIWYG editor for React — zero runtime dependencies.
+    </p>
+    <div id="root"></div>
+  </div>
+
+  <!-- Dependencies from CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script>
+    globalThis.process ??= { env: { NODE_ENV: 'production' } };
+    globalThis.process.env ??= { NODE_ENV: 'production' };
+    globalThis.process.env.NODE_ENV ??= 'production';
+  </script>
+
+  <!-- Built library (run `npm run build` first) -->
+  <script src="./dist/index.umd.js"></script>
+
+  <script type="text/babel">
+    const {
+      Editor, Toolbar, Separator,
+      BtnBold, BtnItalic, BtnUnderline, BtnStrikeThrough,
+      BtnBulletList, BtnOrderedList, BtnIndent, BtnOutdent,
+      BtnLink, BtnImage,
+      BtnAlignLeft, BtnAlignCenter, BtnAlignRight,
+      BtnUndo, BtnRedo, BtnClearFormatting,
+    } = ReactWysiwygLite;
+
+    const INITIAL_HTML = [
+      '<p>Welcome to <strong>react-wysiwyg-lite</strong>! Try the toolbar buttons above.</p>',
+      '<p>You can also <strong>drag &amp; drop images</strong> directly into this area,',
+      ' or use the 🖼 button in the toolbar.</p>',
+      '<ul><li>Bold, italic, underline, strikethrough</li>',
+      '<li>Lists, indentation, alignment</li>',
+      '<li>Links, images, undo/redo</li></ul>',
+    ].join('');
+
+    // onImportImage callback: in a real app this would upload to a server.
+    // Here we just convert to a base64 data URL as a demo.
+    async function handleImportImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function App() {
+      const [html, setHtml] = React.useState(INITIAL_HTML);
+
+      return (
+        <div>
+          <div className="editor-section">
+            <div className="section-label">Editor</div>
+            <Editor
+              value={html}
+              onChange={(e) => setHtml(e.target.value)}
+              onImportImage={handleImportImage}
+              placeholder="Start typing here..."
+            >
+              <Toolbar>
+                <BtnBold /><BtnItalic /><BtnUnderline /><BtnStrikeThrough />
+                <Separator />
+                <BtnBulletList /><BtnOrderedList /><BtnIndent /><BtnOutdent />
+                <Separator />
+                <BtnLink /><BtnImage />
+                <Separator />
+                <BtnAlignLeft /><BtnAlignCenter /><BtnAlignRight />
+                <Separator />
+                <BtnUndo /><BtnRedo />
+                <Separator />
+                <BtnClearFormatting />
+              </Toolbar>
+            </Editor>
+            <p className="hint">
+              💡 Drag &amp; drop an image file anywhere into the editor, or click the image button in the toolbar.
+            </p>
+          </div>
+
+          <div>
+            <div className="section-label">HTML Output</div>
+            <div className="html-output">{html || '(empty)'}</div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
