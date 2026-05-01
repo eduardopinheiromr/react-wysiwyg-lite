@@ -1,25 +1,46 @@
-import { forwardRef, type ForwardedRef } from 'react';
-import type { EditorProps } from './types';
-import { EditorProvider } from './context';
-import { ContentEditable } from './contenteditable';
+import { type ForwardedRef, forwardRef } from "react";
+import { ContentEditable } from "./contenteditable";
+import { EditorProvider } from "./context";
+import { buildThemeStyle } from "./theme";
+import type { EditorProps } from "./types";
 
 export const Editor = forwardRef(function Editor(
-  { children, containerProps, onImportImage, ...rest }: EditorProps,
-  ref: ForwardedRef<HTMLDivElement>,
+	{
+		children,
+		containerProps,
+		onImportImage,
+		dictionary,
+		theme,
+		...rest
+	}: EditorProps,
+	ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const { className: containerClass, ...containerRest } = containerProps ?? {};
-  // Spread only when defined — required by exactOptionalPropertyTypes
-  const providerProps = onImportImage !== undefined ? { onImportImage } : {};
+	const {
+		className: containerClass,
+		style: containerStyle,
+		...containerRest
+	} = containerProps ?? {};
+	const themeStyle = buildThemeStyle(theme);
+	const mergedStyle =
+		themeStyle || containerStyle
+			? { ...themeStyle, ...containerStyle }
+			: undefined;
+	// Spread only when defined — required by exactOptionalPropertyTypes
+	const providerProps = {
+		...(onImportImage !== undefined ? { onImportImage } : {}),
+		...(dictionary !== undefined ? { dictionary } : {}),
+	};
 
-  return (
-    <EditorProvider {...providerProps}>
-      <div
-        {...containerRest}
-        className={['rsw-editor', containerClass].filter(Boolean).join(' ')}
-      >
-        {children}
-        <ContentEditable {...rest} ref={ref} />
-      </div>
-    </EditorProvider>
-  );
+	return (
+		<EditorProvider {...providerProps}>
+			<div
+				{...containerRest}
+				className={["rsw-editor", containerClass].filter(Boolean).join(" ")}
+				{...(mergedStyle !== undefined ? { style: mergedStyle } : {})}
+			>
+				{children}
+				<ContentEditable {...rest} ref={ref} />
+			</div>
+		</EditorProvider>
+	);
 });

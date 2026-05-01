@@ -59,6 +59,58 @@
       overflow-y: auto;
     }
 
+    .code-card {
+      margin-top: 22px;
+      border: 1px solid #dbe4f0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .code-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .code-card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .code-copy {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #0f766e;
+      color: #f8fafc;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .code-copy:hover {
+      background: #115e59;
+    }
+
+    .code-sample {
+      margin: 0;
+      padding: 16px 18px;
+      background: #020617;
+      color: #cbd5e1;
+      font-family: ui-monospace, 'Cascadia Code', monospace;
+      font-size: 0.76rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
     .hint {
       margin-top: 10px;
       font-size: 0.8rem;
@@ -104,21 +156,155 @@
   <script type="text/babel">
     const {
       Editor, Toolbar, Separator,
+      ptBR,
+      BtnH1, BtnH2, BtnH3, BtnH4, BtnH5,
       BtnBold, BtnItalic, BtnUnderline, BtnStrikeThrough,
       BtnBulletList, BtnOrderedList, BtnIndent, BtnOutdent,
-      BtnLink, BtnImage,
+      BtnLink, BtnImage, BtnTable, BtnTwoColumns, BtnMediaLeft, BtnMediaRight, BtnHeroMedia,
       BtnAlignLeft, BtnAlignCenter, BtnAlignRight,
       BtnUndo, BtnRedo, BtnClearFormatting,
     } = ReactWysiwygLite;
 
+    const DEMO_DICTIONARY = {
+      ...ptBR,
+      toolbar: {
+        ...ptBR.toolbar,
+        heroMedia: 'Hero + mídia',
+      },
+      tableToolbar: {
+        ...ptBR.tableToolbar,
+        toggleHeaderRow: 'Linha header',
+      },
+    };
+
+    const DEMO_THEME = {
+      colors: {
+        editorBackground: '#fffdf7',
+        editorBorder: '#d8c8b8',
+        toolbarBackground: '#f8f1e8',
+        buttonText: '#5b3b21',
+        buttonHoverBackground: '#efe2d4',
+        buttonActiveBackground: '#dbeafe',
+        buttonActiveText: '#1d4ed8',
+        linkApplyBackground: '#0f766e',
+        linkApplyText: '#f8fafc',
+        linkApplyHoverBackground: '#115e59',
+        selectionBackground: '#fde68a',
+        selectionText: '#1f2937',
+      },
+    };
+
     const INITIAL_HTML = [
-      '<p>Welcome to <strong>react-wysiwyg-lite</strong>! Try the toolbar buttons above.</p>',
-      '<p>You can also <strong>drag &amp; drop images</strong> directly into this area,',
-      ' or use the 🖼 button in the toolbar.</p>',
-      '<ul><li>Bold, italic, underline, strikethrough</li>',
-      '<li>Lists, indentation, alignment</li>',
-      '<li>Links, images, undo/redo</li></ul>',
+      '<p class="rsw-layout-eyebrow">Demo configurável</p>',
+      '<h2>Preset hero/media, headings e tema por props</h2>',
+      '<p>Selecione um trecho para ver a bubble toolbar com headings, listas e link. Abra o link para ver o botão <strong>Aplicar</strong> com tema customizado.</p>',
+      '<ul><li>Headings H1-H5</li>',
+      '<li>Presets: duas colunas, mídia lateral e hero + mídia</li>',
+      '<li>Dicionário em pt-BR com override parcial</li></ul>',
+      '<table class="rsw-table"><tbody><tr><th><p>Recurso</p></th><th><p>Status</p></th></tr><tr><td><p>Tabela mínima</p></td><td><p>Clique na célula para abrir os controles</p></td></tr><tr><td><p>Header row</p></td><td><p>Use o botão Hdr para alternar a linha atual</p></td></tr></tbody></table>',
     ].join('');
+
+    const DEMO_SNIPPET = String.raw`import {
+  Editor,
+  Toolbar,
+  Separator,
+  ptBR,
+  BtnH1,
+  BtnH2,
+  BtnH3,
+  BtnH4,
+  BtnH5,
+  BtnBold,
+  BtnItalic,
+  BtnUnderline,
+  BtnStrikeThrough,
+  BtnBulletList,
+  BtnOrderedList,
+  BtnIndent,
+  BtnOutdent,
+  BtnLink,
+  BtnImage,
+  BtnTable,
+  BtnTwoColumns,
+  BtnMediaLeft,
+  BtnMediaRight,
+  BtnHeroMedia,
+  BtnAlignLeft,
+  BtnAlignCenter,
+  BtnAlignRight,
+  BtnUndo,
+  BtnRedo,
+  BtnClearFormatting,
+} from 'react-wysiwyg-lite';
+
+const demoDictionary = {
+  ...ptBR,
+  toolbar: {
+    ...ptBR.toolbar,
+    heroMedia: 'Hero + mídia',
+  },
+  tableToolbar: {
+    ...ptBR.tableToolbar,
+    toggleHeaderRow: 'Linha header',
+  },
+};
+
+const demoTheme = {
+  colors: {
+    editorBackground: '#fffdf7',
+    editorBorder: '#d8c8b8',
+    toolbarBackground: '#f8f1e8',
+    buttonText: '#5b3b21',
+    buttonHoverBackground: '#efe2d4',
+    buttonActiveBackground: '#dbeafe',
+    buttonActiveText: '#1d4ed8',
+    linkApplyBackground: '#0f766e',
+    linkApplyText: '#f8fafc',
+    linkApplyHoverBackground: '#115e59',
+    selectionBackground: '#fde68a',
+    selectionText: '#1f2937',
+  },
+};
+
+async function handleImportImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => resolve(event.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function DemoEditor({ html, setHtml }) {
+  return (
+    <Editor
+      value={html}
+      onChange={(event) => setHtml(event.target.value)}
+      onImportImage={handleImportImage}
+      dictionary={demoDictionary}
+      theme={demoTheme}
+      placeholder="Comece a digitar..."
+    >
+      <Toolbar>
+        <BtnH1 /><BtnH2 /><BtnH3 /><BtnH4 /><BtnH5 />
+        <Separator />
+        <BtnBold /><BtnItalic /><BtnUnderline /><BtnStrikeThrough />
+        <Separator />
+        <BtnBulletList /><BtnOrderedList /><BtnIndent /><BtnOutdent />
+        <Separator />
+        <BtnLink /><BtnImage /><BtnTable />
+        <Separator />
+        <BtnTwoColumns /><BtnMediaLeft /><BtnMediaRight /><BtnHeroMedia />
+        <Separator />
+        <BtnAlignLeft /><BtnAlignCenter /><BtnAlignRight />
+        <Separator />
+        <BtnUndo /><BtnRedo />
+        <Separator />
+        <BtnClearFormatting />
+      </Toolbar>
+    </Editor>
+  );
+}`;
 
     // onImportImage callback: in a real app this would upload to a server.
     // Here we just convert to a base64 data URL as a demo.
@@ -133,23 +319,36 @@
 
     function App() {
       const [html, setHtml] = React.useState(INITIAL_HTML);
+      const [copyLabel, setCopyLabel] = React.useState('Copiar snippet');
+
+      async function copySnippet() {
+        await navigator.clipboard.writeText(DEMO_SNIPPET);
+        setCopyLabel('Snippet copiado');
+        window.setTimeout(() => setCopyLabel('Copiar snippet'), 1600);
+      }
 
       return (
         <div>
           <div className="editor-section">
             <div className="section-label">Editor</div>
             <Editor
+              dictionary={DEMO_DICTIONARY}
+              theme={DEMO_THEME}
               value={html}
               onChange={(e) => setHtml(e.target.value)}
               onImportImage={handleImportImage}
-              placeholder="Start typing here..."
+              placeholder="Comece a digitar aqui..."
             >
               <Toolbar>
+                <BtnH1 /><BtnH2 /><BtnH3 /><BtnH4 /><BtnH5 />
+                <Separator />
                 <BtnBold /><BtnItalic /><BtnUnderline /><BtnStrikeThrough />
                 <Separator />
                 <BtnBulletList /><BtnOrderedList /><BtnIndent /><BtnOutdent />
                 <Separator />
-                <BtnLink /><BtnImage />
+                <BtnLink /><BtnImage /><BtnTable />
+                <Separator />
+                <BtnTwoColumns /><BtnMediaLeft /><BtnMediaRight /><BtnHeroMedia />
                 <Separator />
                 <BtnAlignLeft /><BtnAlignCenter /><BtnAlignRight />
                 <Separator />
@@ -159,13 +358,23 @@
               </Toolbar>
             </Editor>
             <p className="hint">
-              💡 Drag &amp; drop an image file anywhere into the editor, or click the image button in the toolbar.
+              Experimente selecionar texto para abrir a bubble toolbar com headings e listas, abrir o popover de link para ver o botão “Aplicar” tematizado e clicar em uma célula da tabela para mexer em header, alinhamento, linhas e colunas.
             </p>
           </div>
 
           <div>
             <div className="section-label">HTML Output</div>
             <div className="html-output">{html || '(empty)'}</div>
+
+            <div className="code-card">
+              <div className="code-card-header">
+                <div className="code-card-title">Snippet idêntico ao setup da demo</div>
+                <button type="button" className="code-copy" onClick={copySnippet}>
+                  {copyLabel}
+                </button>
+              </div>
+              <pre className="code-sample">{DEMO_SNIPPET}</pre>
+            </div>
           </div>
         </div>
       );

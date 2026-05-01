@@ -8,7 +8,13 @@ import {
 } from "react";
 import { createButton } from "./button";
 import { useEditorContext } from "./context";
-import { escapeAttr } from "./html";
+import {
+	buildBlockPresetHTML,
+	buildImageHTML,
+	buildTableHTML,
+	sanitizeLinkURL,
+} from "./html";
+import type { ButtonProps } from "./types";
 
 const icon = (path: string, size = 16) => (
 	<svg
@@ -27,17 +33,40 @@ export const BtnBold = createButton(
 	"Bold",
 	<strong style={{ fontFamily: "serif", fontSize: "1em" }}>B</strong>,
 	"bold",
+	{ dictionaryKey: "bold" },
 );
+
+const createHeadingButton = (
+	dictionaryKey: "heading1" | "heading2" | "heading3" | "heading4" | "heading5",
+	level: 1 | 2 | 3 | 4 | 5,
+) =>
+	createButton(
+		`Heading ${level}`,
+		<span style={{ fontSize: "0.72rem", fontWeight: 700 }}>H{level}</span>,
+		(api) => api.exec("formatBlock", `<h${level}>`),
+		{ dictionaryKey },
+	);
+
+export const BtnH1 = createHeadingButton("heading1", 1);
+export const BtnH2 = createHeadingButton("heading2", 2);
+export const BtnH3 = createHeadingButton("heading3", 3);
+export const BtnH4 = createHeadingButton("heading4", 4);
+export const BtnH5 = createHeadingButton("heading5", 5);
+
 export const BtnItalic = createButton(
 	"Italic",
 	<em style={{ fontFamily: "serif", fontSize: "1em" }}>I</em>,
 	"italic",
+	{ dictionaryKey: "italic" },
 );
-export const BtnUnderline = createButton("Underline", <u>U</u>, "underline");
+export const BtnUnderline = createButton("Underline", <u>U</u>, "underline", {
+	dictionaryKey: "underline",
+});
 export const BtnStrikeThrough = createButton(
 	"Strikethrough",
 	<s>S</s>,
 	"strikeThrough",
+	{ dictionaryKey: "strikethrough" },
 );
 export const BtnUndo = createButton(
 	"Undo",
@@ -45,6 +74,7 @@ export const BtnUndo = createButton(
 		"M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z",
 	),
 	"undo",
+	{ dictionaryKey: "undo" },
 );
 export const BtnRedo = createButton(
 	"Redo",
@@ -52,6 +82,7 @@ export const BtnRedo = createButton(
 		"M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z",
 	),
 	"redo",
+	{ dictionaryKey: "redo" },
 );
 export const BtnClearFormatting = createButton(
 	"Clear formatting",
@@ -59,6 +90,7 @@ export const BtnClearFormatting = createButton(
 		"M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.43L15.73 21 17 19.73 3.55 6.28 3.27 5zM6 5v.18L8.82 8h2.4l-.72 1.68 2.1 2.1L14.21 8H20V5H6z",
 	),
 	"removeFormat",
+	{ dictionaryKey: "clearFormatting" },
 );
 export const BtnBulletList = createButton(
 	"Bullet list",
@@ -66,6 +98,7 @@ export const BtnBulletList = createButton(
 		"M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z",
 	),
 	"insertUnorderedList",
+	{ dictionaryKey: "bulletList" },
 );
 export const BtnOrderedList = createButton(
 	"Numbered list",
@@ -73,6 +106,7 @@ export const BtnOrderedList = createButton(
 		"M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-7v2h14V4H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z",
 	),
 	"insertOrderedList",
+	{ dictionaryKey: "numberedList" },
 );
 export const BtnAlignLeft = createButton(
 	"Align left",
@@ -80,6 +114,7 @@ export const BtnAlignLeft = createButton(
 		"M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z",
 	),
 	"justifyLeft",
+	{ dictionaryKey: "alignLeft" },
 );
 export const BtnAlignCenter = createButton(
 	"Align center",
@@ -87,6 +122,7 @@ export const BtnAlignCenter = createButton(
 		"M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z",
 	),
 	"justifyCenter",
+	{ dictionaryKey: "alignCenter" },
 );
 export const BtnAlignRight = createButton(
 	"Align right",
@@ -94,6 +130,7 @@ export const BtnAlignRight = createButton(
 		"M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zM3 3v2h18V3H3z",
 	),
 	"justifyRight",
+	{ dictionaryKey: "alignRight" },
 );
 export const BtnSubscript = createButton(
 	"Subscript",
@@ -101,6 +138,7 @@ export const BtnSubscript = createButton(
 		x<sub>2</sub>
 	</span>,
 	"subscript",
+	{ dictionaryKey: "subscript" },
 );
 export const BtnSuperscript = createButton(
 	"Superscript",
@@ -108,6 +146,7 @@ export const BtnSuperscript = createButton(
 		x<sup>2</sup>
 	</span>,
 	"superscript",
+	{ dictionaryKey: "superscript" },
 );
 export const BtnIndent = createButton(
 	"Indent",
@@ -115,6 +154,7 @@ export const BtnIndent = createButton(
 		"M3 19h19v-2H3v2zm7-6h12v-2H10v2zm-7.59-5.59L7 11 2 6l4.59-4.41L8 3 3 8l5 5-1.41 1.41zM3 3v2h19V3H3z",
 	),
 	"indent",
+	{ dictionaryKey: "indent" },
 );
 export const BtnOutdent = createButton(
 	"Outdent",
@@ -122,7 +162,103 @@ export const BtnOutdent = createButton(
 		"M11 17h10v-2H11v2zm-8-5l5 5V7l-5 5zm0 9h19v-2H3v2zM3 3v2h19V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z",
 	),
 	"outdent",
+	{ dictionaryKey: "outdent" },
 );
+
+const createBlockPresetButton = (
+	dictionaryKey: "twoColumns" | "mediaLeft" | "mediaRight" | "heroMedia",
+	content: React.ReactNode,
+	preset: "twoColumns" | "mediaLeft" | "mediaRight" | "heroMedia",
+) => {
+	const Button = ({ className, ...rest }: ButtonProps) => {
+		const { dictionary, getCommandAPI } = useEditorContext();
+		const title = dictionary.toolbar[dictionaryKey];
+
+		const onMouseDown = (event: ReactMouseEvent<HTMLButtonElement>) => {
+			event.preventDefault();
+			const api = getCommandAPI();
+			if (!api) return;
+
+			api.focus();
+			api.insertHTML(buildBlockPresetHTML(preset, dictionary));
+		};
+
+		return (
+			<button
+				{...rest}
+				className={["rsw-btn", className].filter(Boolean).join(" ")}
+				aria-label={title}
+				onMouseDown={onMouseDown}
+				tabIndex={-1}
+				title={title}
+				type="button"
+			>
+				{content}
+			</button>
+		);
+	};
+
+	Button.displayName = `Btn${dictionaryKey[0]?.toUpperCase()}${dictionaryKey.slice(1)}`;
+	return Button;
+};
+
+export const BtnTwoColumns = createBlockPresetButton(
+	"twoColumns",
+	icon("M3 5h7v14H3V5zm11 0h7v14h-7V5z"),
+	"twoColumns",
+);
+
+export const BtnMediaLeft = createBlockPresetButton(
+	"mediaLeft",
+	icon(
+		"M3 5h7v14H3V5zm9 0h9v2h-9V5zm0 4h9v2h-9V9zm0 4h9v2h-9v-2zm0 4h6v2h-6v-2z",
+	),
+	"mediaLeft",
+);
+
+export const BtnMediaRight = createBlockPresetButton(
+	"mediaRight",
+	icon(
+		"M3 5h9v2H3V5zm0 4h9v2H3V9zm0 4h9v2H3v-2zm0 4h6v2H3v-2zm10-12h8v14h-8V5z",
+	),
+	"mediaRight",
+);
+
+export const BtnHeroMedia = createBlockPresetButton(
+	"heroMedia",
+	icon(
+		"M3 6h11v3H3V6zm0 5h8v2H3v-2zm0 4h7v2H3v-2zm13-9h5v12h-5V6zm-2 12H3v-2h11v2z",
+	),
+	"heroMedia",
+);
+
+export const BtnTable = () => {
+	const { dictionary, getCommandAPI } = useEditorContext();
+
+	const onMouseDown = (event: ReactMouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		const api = getCommandAPI();
+		if (!api) return;
+
+		api.focus();
+		api.insertHTML(buildTableHTML(2, 2, dictionary));
+	};
+
+	return (
+		<button
+			className="rsw-btn"
+			aria-label={dictionary.toolbar.table}
+			onMouseDown={onMouseDown}
+			tabIndex={-1}
+			title={dictionary.toolbar.table}
+			type="button"
+		>
+			{icon(
+				"M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 4v9h5V9H4zm7 0v9h9V9h-9zM4 6v2h16V6H4z",
+			)}
+		</button>
+	);
+};
 
 // ─── BtnLink ────────────────────────────────────────────────────────────────
 // Uses React-controlled state instead of the native Popover API.
@@ -130,7 +266,7 @@ export const BtnOutdent = createButton(
 // (i.e. on the button itself), which closed the popover immediately after open.
 
 export const BtnLink = () => {
-	const { getCommandAPI, selectionTick: _ } = useEditorContext();
+	const { dictionary, getCommandAPI, selectionTick: _ } = useEditorContext();
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -200,14 +336,14 @@ export const BtnLink = () => {
 	};
 
 	const apply = () => {
-		const trimmed = url.trim();
-		if (!trimmed || !savedRange.current) return;
+		const safeUrl = sanitizeLinkURL(url);
+		if (!safeUrl || !savedRange.current) return;
 		const api = getCommandAPI();
 		if (!api) return;
 		const sel = window.getSelection();
 		sel?.removeAllRanges();
 		sel?.addRange(savedRange.current);
-		api.exec("createLink", trimmed);
+		api.exec("createLink", safeUrl);
 		setOpen(false);
 	};
 
@@ -223,9 +359,10 @@ export const BtnLink = () => {
 			<button
 				ref={buttonRef}
 				className="rsw-btn"
+				aria-label={dictionary.toolbar.link}
 				onMouseDown={onMouseDown}
 				tabIndex={-1}
-				title="Link"
+				title={dictionary.toolbar.link}
 				type="button"
 			>
 				{icon(
@@ -247,17 +384,18 @@ export const BtnLink = () => {
 							setUrl(e.target.value)
 						}
 						onKeyDown={onKeyDown}
-						placeholder="https://"
+						placeholder={dictionary.link.placeholder}
 						className="rsw-link-input"
 					/>
 					<button type="button" className="rsw-link-apply" onClick={apply}>
-						Apply
+						{dictionary.link.apply}
 					</button>
 					<button
 						type="button"
 						className="rsw-link-cancel"
 						onClick={() => setOpen(false)}
-						aria-label="Close"
+						aria-label={dictionary.link.close}
+						title={dictionary.link.close}
 					>
 						{icon(
 							"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
@@ -283,23 +421,27 @@ const fileToDataUrl = (file: File): Promise<string> =>
 const insertImage = (
 	api: ReturnType<ReturnType<typeof useEditorContext>["getCommandAPI"]>,
 	savedRange: Range | null,
-	src: string,
-	alt: string,
+	image: {
+		src: string;
+		alt: string;
+		width?: number;
+		height?: number;
+	},
 ) => {
 	if (!api) return;
+	const imageHTML = buildImageHTML(image);
+	if (!imageHTML) return;
 	if (savedRange) {
 		const sel = window.getSelection();
 		sel?.removeAllRanges();
 		sel?.addRange(savedRange);
 	}
 	api.focus();
-	api.insertHTML(
-		`<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" style="max-width:100%;height:auto;display:block;margin:4px 0;">`,
-	);
+	api.insertHTML(imageHTML);
 };
 
 export const BtnImage = () => {
-	const { getCommandAPI, getOnImportImage } = useEditorContext();
+	const { dictionary, getCommandAPI, getOnImportImage } = useEditorContext();
 	const fileRef = useRef<HTMLInputElement>(null);
 	const savedRange = useRef<Range | null>(null);
 
@@ -322,14 +464,23 @@ export const BtnImage = () => {
 
 		if (handler) {
 			void handler(file).then((result) => {
-				const src = typeof result === "string" ? result : result.url;
-				const alt =
-					typeof result === "object" ? (result.alt ?? file.name) : file.name;
-				insertImage(api, range, src, alt);
+				const image =
+					typeof result === "string"
+						? { src: result, alt: file.name }
+						: {
+								src: result.url,
+								alt: result.alt ?? file.name,
+								...(result.width !== undefined ? { width: result.width } : {}),
+								...(result.height !== undefined
+									? { height: result.height }
+									: {}),
+							};
+
+				insertImage(api, range, image);
 			});
 		} else {
 			void fileToDataUrl(file).then((src) => {
-				insertImage(api, range, src, file.name);
+				insertImage(api, range, { src, alt: file.name });
 			});
 		}
 	};
@@ -338,9 +489,10 @@ export const BtnImage = () => {
 		<>
 			<button
 				className="rsw-btn"
+				aria-label={dictionary.toolbar.insertImage}
 				onMouseDown={onMouseDown}
 				tabIndex={-1}
-				title="Insert image"
+				title={dictionary.toolbar.insertImage}
 				type="button"
 			>
 				{icon(

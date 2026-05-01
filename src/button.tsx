@@ -9,7 +9,10 @@ export const createButton = (
 	options: CreateButtonOptions = {},
 ) => {
 	const Button = ({ className, ...rest }: ButtonProps) => {
-		const { getCommandAPI, selectionTick: _ } = useEditorContext();
+		const { getCommandAPI, selectionTick: _, dictionary } = useEditorContext();
+		const label = options.dictionaryKey
+			? dictionary.toolbar[options.dictionaryKey]
+			: title;
 
 		const active = options.alwaysActive
 			? false
@@ -41,10 +44,11 @@ export const createButton = (
 			<button
 				{...rest}
 				className={["rsw-btn", className].filter(Boolean).join(" ")}
+				aria-label={label}
 				data-active={active || undefined}
 				onMouseDown={onMouseDown}
 				tabIndex={-1}
-				title={title}
+				title={label}
 				type="button"
 			>
 				{content}
