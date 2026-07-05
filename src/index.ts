@@ -7,6 +7,8 @@ export {
 	sanitizeEditorHTML,
 	sanitizeImageURL,
 	sanitizeLinkURL,
+	serializeTokens,
+	parseTokens,
 } from "./html";
 export {
 	BtnBold,
@@ -53,4 +55,6 @@ export type {
 	EditorThemeInput,
 	ImageResult,
 	OnImportImage,
+	EditorContextValue,
 } from "./types";
+export { useEditorContext } from "./context";

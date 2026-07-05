@@ -3,6 +3,7 @@ import {
 	type DragEvent,
 	type ForwardedRef,
 	type ChangeEvent as ReactChangeEvent,
+	type KeyboardEvent as ReactKeyboardEvent,
 	type MouseEvent as ReactMouseEvent,
 	createElement,
 	forwardRef,
@@ -930,6 +931,70 @@ export const ContentEditable = forwardRef(function ContentEditable(
 		})();
 	};
 
+	const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+		if (event.key !== "Backspace" && event.key !== "Delete") return;
+
+		const sel = window.getSelection();
+		if (!sel?.rangeCount) return;
+
+		const range = sel.getRangeAt(0);
+		if (!range.collapsed) return;
+
+		const tokenSelector = "span[data-token]";
+
+		if (event.key === "Backspace") {
+			const node = range.startContainer;
+			const offset = range.startOffset;
+
+			if (node.nodeType === Node.TEXT_NODE && offset === 0) {
+				const prev = node.previousSibling;
+				if (prev instanceof Element && prev.matches(tokenSelector)) {
+					event.preventDefault();
+					prev.remove();
+					return;
+				}
+			}
+
+			if (
+				node.nodeType === Node.ELEMENT_NODE &&
+				offset > 0 &&
+				node.childNodes[offset - 1] instanceof Element &&
+				(node.childNodes[offset - 1] as Element).matches(tokenSelector)
+			) {
+				event.preventDefault();
+				node.childNodes[offset - 1].remove();
+				return;
+			}
+		}
+
+		if (event.key === "Delete") {
+			const node = range.startContainer;
+			const offset = range.startOffset;
+
+			if (
+				node.nodeType === Node.TEXT_NODE &&
+				offset === (node.textContent?.length ?? 0)
+			) {
+				const next = node.nextSibling;
+				if (next instanceof Element && next.matches(tokenSelector)) {
+					event.preventDefault();
+					next.remove();
+					return;
+				}
+			}
+
+			if (
+				node.nodeType === Node.ELEMENT_NODE &&
+				offset < node.childNodes.length &&
+				node.childNodes[offset] instanceof Element &&
+				(node.childNodes[offset] as Element).matches(tokenSelector)
+			) {
+				event.preventDefault();
+				node.childNodes[offset].remove();
+			}
+		}
+	};
+
 	const handleClick = (event: ReactMouseEvent<HTMLElement>) => {
 		const target = event.target;
 		if (target instanceof HTMLImageElement) {
@@ -965,6 +1030,7 @@ export const ContentEditable = forwardRef(function ContentEditable(
 				contentEditable: !disabled,
 				suppressContentEditableWarning: true,
 				"data-placeholder": placeholder,
+				onKeyDown: handleKeyDown,
 				onPaste: handlePaste,
 				onDragOver: handleDragOver,
 				onDrop: handleDrop,

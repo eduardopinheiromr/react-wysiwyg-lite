@@ -116,6 +116,7 @@ export type CommandAPI = {
 	getSelection: () => Selection | null;
 	wrapSelection: (tag: string, attrs?: Record<string, string>) => void;
 	insertHTML: (html: string) => void;
+	insertToken: (token: string, label?: string) => void;
 	focus: () => void;
 };
 

@@ -66,7 +66,7 @@ const ALLOWED_ATTRS: Record<string, string[]> = {
 	H4: ["class"],
 	H5: ["class"],
 	H6: ["class"],
-	SPAN: ["style", "class"],
+	SPAN: ["style", "class", "data-token", "contenteditable"],
 	MARK: ["class"],
 	IMG: ["src", "alt", "width", "height", "style", "class"],
 	TABLE: ["class"],
@@ -421,3 +421,21 @@ export const isEmpty = (html: string): boolean =>
 
 export const sanitizePastedHTML = (html: string): string =>
 	sanitizeEditorHTML(html);
+
+export const buildTokenHTML = (token: string, label?: string): string => {
+	const escaped = escapeHTML(token);
+	const display = label ? escapeHTML(label) : `{{${escaped}}}`;
+	return `<span contenteditable="false" data-token="${escaped}">${display}</span>`;
+};
+
+const TOKEN_SPAN_RE = /<span\s+[^>]*?\bdata-token="([^"]*)"[^>]*>.*?<\/span>/gi;
+
+export const serializeTokens = (html: string): string =>
+	html.replace(TOKEN_SPAN_RE, "{{$1}}");
+
+const TOKEN_PLACEHOLDER_RE = /\{\{([^}]+)\}\}/g;
+
+export const parseTokens = (html: string): string =>
+	html.replace(TOKEN_PLACEHOLDER_RE, (_, token: string) =>
+		buildTokenHTML(token),
+	);

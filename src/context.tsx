@@ -7,6 +7,7 @@ import {
 	useState,
 } from "react";
 import { mergeDictionary } from "./dictionary";
+import { buildTokenHTML } from "./html";
 import * as sel from "./selection";
 import type {
 	CommandAPI,
@@ -76,6 +77,8 @@ export const EditorProvider = ({
 			getSelection: sel.getSelection,
 			wrapSelection: sel.wrapSelection,
 			insertHTML: sel.insertHTML,
+			insertToken: (token, label) =>
+				sel.insertHTML(buildTokenHTML(token, label)),
 		};
 	};
 
