@@ -955,15 +955,13 @@ export const ContentEditable = forwardRef(function ContentEditable(
 				}
 			}
 
-			if (
-				node.nodeType === Node.ELEMENT_NODE &&
-				offset > 0 &&
-				node.childNodes[offset - 1] instanceof Element &&
-				(node.childNodes[offset - 1] as Element).matches(tokenSelector)
-			) {
-				event.preventDefault();
-				node.childNodes[offset - 1].remove();
-				return;
+			if (node.nodeType === Node.ELEMENT_NODE && offset > 0) {
+				const child = node.childNodes[offset - 1];
+				if (child instanceof Element && child.matches(tokenSelector)) {
+					event.preventDefault();
+					child.remove();
+					return;
+				}
 			}
 		}
 
@@ -985,12 +983,13 @@ export const ContentEditable = forwardRef(function ContentEditable(
 
 			if (
 				node.nodeType === Node.ELEMENT_NODE &&
-				offset < node.childNodes.length &&
-				node.childNodes[offset] instanceof Element &&
-				(node.childNodes[offset] as Element).matches(tokenSelector)
+				offset < node.childNodes.length
 			) {
-				event.preventDefault();
-				node.childNodes[offset].remove();
+				const child = node.childNodes[offset];
+				if (child instanceof Element && child.matches(tokenSelector)) {
+					event.preventDefault();
+					child.remove();
+				}
 			}
 		}
 	};
