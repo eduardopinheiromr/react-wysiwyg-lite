@@ -43,6 +43,22 @@ npm install react-wysiwyg-lite
 import 'react-wysiwyg-lite/styles.css';
 ```
 
+### AI Agent Skill
+
+This package ships a skill that teaches AI coding assistants (Copilot, Claude, etc.) the full API surface. Run it once per project after installing:
+
+```bash
+npx react-wysiwyg-lite install-skill
+```
+
+Options:
+
+| Flag | Effect |
+| --- | --- |
+| *(default)* | Installs to `.agents/skills/` in the current directory |
+| `--global` | Installs to `~/.agents/skills/` (available to all projects) |
+| `--path <dir>` | Installs to a custom `.agents/skills/` parent directory |
+
 ## Quick Start
 
 ### Uncontrolled

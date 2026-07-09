@@ -1,6 +1,6 @@
 {
 	"name": "react-wysiwyg-lite",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"description": "Lightweight, extensible WYSIWYG editor for React. useState-first API, zero dependencies.",
 	"type": "module",
 	"main": "./dist/index.cjs",
@@ -19,10 +19,12 @@
 		},
 		"./styles.css": "./dist/styles.css"
 	},
-	"files": ["dist", "skills"],
+	"bin": {
+		"react-wysiwyg-lite": "./bin/cli.cjs"
+	},
+	"files": ["dist", "skills", "bin"],
 	"sideEffects": ["*.css"],
 	"scripts": {
-		"postinstall": "node scripts/postinstall.mjs",
 		"build": "vite build && cp src/styles.css dist/styles.css && cp src/styles.css.d.ts dist/styles.css.d.ts",
 		"prepublishOnly": "node scripts/bump-version.mjs && npm run build",
 		"test": "vitest",

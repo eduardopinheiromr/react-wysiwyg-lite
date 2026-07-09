@@ -457,3 +457,108 @@ function checkIfBold() {
   return api?.isActive("bold") ?? false;
 }
 ```
+
+### Inserting tokens at cursor from external buttons
+
+When buttons live **outside** `<Editor>`, you need a bridge to access `getCommandAPI`. Use `onMouseDown` (not `onClick`) with `preventDefault()` to avoid stealing focus from the editor.
+
+**Approach A: buttons inside `<Editor>` (simplest)**
+
+```tsx
+import { Editor, Toolbar, BtnBold, useEditorContext } from "react-wysiwyg-lite";
+
+const TOKENS = ["Teste", "Testando", "Testado"];
+
+function TokenButtons() {
+  const { getCommandAPI } = useEditorContext();
+
+  return (
+    <div style={{ display: "flex", gap: 8, padding: "8px 0" }}>
+      {TOKENS.map((token) => (
+        <button
+          key={token}
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault(); // ⚠️ keeps focus in editor
+            const api = getCommandAPI();
+            api?.focus();
+            api?.insertHTML(token); // inserts at cursor, replaces selection
+          }}
+          style={{
+            padding: "6px 14px",
+            borderRadius: 6,
+            border: "1px solid #cbd5e1",
+            background: "#f1f5f9",
+            cursor: "pointer",
+          }}
+        >
+          {token}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Usage:
+<Editor value={html} onChange={(e) => setHtml(e.target.value)}>
+  <Toolbar><BtnBold /></Toolbar>
+  <TokenButtons />
+</Editor>
+```
+
+**Approach B: buttons outside `<Editor>` (with bridge)**
+
+```tsx
+import { useState, type MouseEvent } from "react";
+import { Editor, Toolbar, BtnBold, useEditorContext } from "react-wysiwyg-lite";
+
+// Bridge component — captures getCommandAPI and exposes it to the parent
+function CommandAPIBridge({
+  onMount,
+}: {
+  onMount: (getAPI: () => ReturnType<typeof useEditorContext>["getCommandAPI"]) => void;
+}) {
+  const { getCommandAPI } = useEditorContext();
+  useState(() => onMount(() => getCommandAPI));
+  return null;
+}
+
+export function EditorComTokensExterno() {
+  const [html, setHtml] = useState("<p>Posicione o cursor e clique em um token 👇</p>");
+  const [getAPI, setGetAPI] = useState<() => ReturnType<typeof useEditorContext>["getCommandAPI"]>(
+    () => () => null,
+  );
+
+  const handleInsert = (e: MouseEvent<HTMLButtonElement>, token: string) => {
+    e.preventDefault();
+    const api = getAPI();
+    if (!api) return;
+    api.focus();
+    api.insertHTML(token);
+  };
+
+  return (
+    <div>
+      {/* Buttons OUTSIDE the editor */}
+      <div style={{ marginBottom: 8, display: "flex", gap: 8 }}>
+        {["Teste", "Testando", "Testado"].map((token) => (
+          <button key={token} type="button" onMouseDown={(e) => handleInsert(e, token)}>
+            {token}
+          </button>
+        ))}
+      </div>
+
+      <Editor value={html} onChange={(e) => setHtml(e.target.value)}>
+        <Toolbar><BtnBold /></Toolbar>
+        <CommandAPIBridge onMount={setGetAPI} />
+      </Editor>
+    </div>
+  );
+}
+```
+
+Key points for both approaches:
+- Always use `onMouseDown` + `e.preventDefault()` so the editor doesn't lose focus
+- Call `api.focus()` before inserting to ensure the cursor is in the editor
+- `insertHTML()` inserts at the current cursor position; if text is selected, it replaces the selection
+```
