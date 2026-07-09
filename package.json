@@ -19,9 +19,10 @@
 		},
 		"./styles.css": "./dist/styles.css"
 	},
-	"files": ["dist"],
+	"files": ["dist", "skills"],
 	"sideEffects": ["*.css"],
 	"scripts": {
+		"postinstall": "node scripts/postinstall.mjs",
 		"build": "vite build && cp src/styles.css dist/styles.css && cp src/styles.css.d.ts dist/styles.css.d.ts",
 		"prepublishOnly": "node scripts/bump-version.mjs && npm run build",
 		"test": "vitest",

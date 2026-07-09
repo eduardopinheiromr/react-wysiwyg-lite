@@ -75,6 +75,8 @@ export const EditorProvider = ({
 			},
 			getRange: sel.getRange,
 			getSelection: sel.getSelection,
+			saveCaretPosition: () => sel.saveCaretPosition(current),
+			restoreCaretPosition: (pos) => sel.restoreCaretPosition(current, pos),
 			wrapSelection: sel.wrapSelection,
 			insertHTML: sel.insertHTML,
 			insertToken: (token, label) =>

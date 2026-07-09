@@ -42,6 +42,7 @@ export {
 } from "./buttons";
 
 export type {
+	CaretPos,
 	EditorProps,
 	ContentEditableProps,
 	CommandAPI,

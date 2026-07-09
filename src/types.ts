@@ -108,12 +108,16 @@ export type ChangeEvent = SyntheticEvent & {
 	target: { value: string; name?: string };
 };
 
+export type CaretPos = { start: number; end: number };
+
 export type CommandAPI = {
 	el: HTMLElement;
 	exec: (command: string, value?: string) => void;
 	isActive: (command: string) => boolean;
 	getRange: () => Range | null;
 	getSelection: () => Selection | null;
+	saveCaretPosition: () => CaretPos | null;
+	restoreCaretPosition: (pos: CaretPos) => void;
 	wrapSelection: (tag: string, attrs?: Record<string, string>) => void;
 	insertHTML: (html: string) => void;
 	insertToken: (token: string, label?: string) => void;
